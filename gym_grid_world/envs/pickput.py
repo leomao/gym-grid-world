@@ -17,7 +17,7 @@ State = IntEnum('State', [
     'end' # this must exists
 ])
 
-action_types = [ 'up', 'down', 'left', 'right', 'pick', 'put', ]
+action_types = [ 'stay', 'up', 'down', 'left', 'right', 'pick', 'put', ]
 Action = IntEnum('State', action_types)
 
 Movesets = [Action.up, Action.down, Action.left, Action.right]
@@ -61,6 +61,8 @@ class PickputEnv(GridEnv):
         if act is None:
             return 0, False
         rew = 0
+        if act == Action.stay:
+            return 0, False
         if act in Movesets:
             x, y = self.player_pos
             nx, ny = self.player_pos
@@ -126,7 +128,15 @@ class PickputEnv(GridEnv):
             self.draw.ellipse(loc, fill='blue')
 
 if __name__ == '__main__':
-    env = PickputEnv(task_type=TaskType.put)
+    import sys
+    task = TaskType.pick
+    if len(sys.argv) > 1:
+        task_name = sys.argv[1]
+        if task_name == 'put':
+            task = TaskType.put
+        elif task_name == 'both':
+            task = TaskType.both
+    env = PickputEnv(task_type=task)
     try:
         env.gui_start()
     except KeyboardInterrupt:
