@@ -113,8 +113,7 @@ class GridEnv(gym.Env):
         return arr.astype('float32')
 
     def set_keys_action(self, keys, action):
-        for k in keys:
-            self.key_map[k] = action
+        self.key_map[keys] = action
 
     # Tk GUI setup
     def gui_start(self):
@@ -140,6 +139,6 @@ class GridEnv(gym.Env):
         self.tk.after(1000//self.FPS, self.gui_step)
 
     def gui_onkey(self, event):
-        if event.keycode in self.key_map:
-            self.last_action = self.key_map[event.keycode]
+        if event.keysym in self.key_map:
+            self.last_action = self.key_map[event.keysym]
         self._gui_onkey(event)

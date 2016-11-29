@@ -38,12 +38,12 @@ class PickputEnv(GridEnv):
 
         self.last_act = None
 
-        self.set_keys_action([111, 8320768], Action.up)
-        self.set_keys_action([116, 8255233], Action.down)
-        self.set_keys_action([113, 8124162], Action.left)
-        self.set_keys_action([114, 8189699], Action.right)
-        self.set_keys_action([53, 458872], Action.pick)
-        self.set_keys_action([52, 393338], Action.put)
+        self.set_keys_action('Up', Action.up)
+        self.set_keys_action('Down', Action.down)
+        self.set_keys_action('Left', Action.left)
+        self.set_keys_action('Right', Action.right)
+        self.set_keys_action('Z', Action.pick)
+        self.set_keys_action('X', Action.put)
 
     def _init(self):
         self.player_pos = self.randpos()
