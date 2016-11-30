@@ -18,7 +18,7 @@ State = IntEnum('State', [
 ])
 
 action_types = [ 'stay', 'up', 'down', 'left', 'right', 'pick', 'put', ]
-Action = IntEnum('State', action_types)
+Action = IntEnum('Action', action_types, start=0)
 
 Movesets = [Action.up, Action.down, Action.left, Action.right]
 
@@ -26,8 +26,8 @@ class PickputEnv(GridEnv):
 
     metatdata = {'render.modes': ['human']}
 
-    def __init__(self, *, task_type=TaskType.pick):
-        super().__init__(action_types, (10, 10), (6, 6))
+    def __init__(self, *, task_type=TaskType.pick, max_step=500):
+        super().__init__(action_types, (10, 10), (6, 6), max_step=max_step)
         self.state = None
         self.first_pick = True
         self.task_type = task_type
@@ -38,12 +38,12 @@ class PickputEnv(GridEnv):
 
         self.last_act = None
 
-        self.set_keys_action('Up', Action.up)
-        self.set_keys_action('Down', Action.down)
-        self.set_keys_action('Left', Action.left)
-        self.set_keys_action('Right', Action.right)
-        self.set_keys_action('Z', Action.pick)
-        self.set_keys_action('X', Action.put)
+        self.set_key_action('Up', Action.up)
+        self.set_key_action('Down', Action.down)
+        self.set_key_action('Left', Action.left)
+        self.set_key_action('Right', Action.right)
+        self.set_key_action('x', Action.pick)
+        self.set_key_action('z', Action.put)
 
     def _init(self):
         self.player_pos = self.randpos()

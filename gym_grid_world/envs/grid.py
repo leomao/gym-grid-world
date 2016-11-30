@@ -15,7 +15,7 @@ class GridEnv(gym.Env):
     metatdata = {'render.modes': ['human']}
 
     def __init__(self, actions, grid_size, block_size, *,
-                 gui_amp=4, FPS=20):
+                 gui_amp=4, FPS=20, max_step=-1):
         '''
         Usage:
         self.super().__init__(actions, grid_size, block_size,
@@ -29,6 +29,9 @@ class GridEnv(gym.Env):
 
         self.image = Image.new('RGB', self.frame_size, 'black')
         self.draw = ImageDraw.Draw(self.image)
+
+        self.max_step = max_step
+        self.step_cnt = 0
 
         self._seed()
 
@@ -45,6 +48,10 @@ class GridEnv(gym.Env):
 
     def __del__(self):
         pass
+
+    def init(self, *, show_gui=False):
+        self.show_gui = show_gui
+        self._init()
 
     # should be implemented
     def _init(self):
@@ -66,20 +73,26 @@ class GridEnv(gym.Env):
 
     def _reset(self):
         self.last_action = None
-        self._init()
+        self.step_cnt = 0
+        self.init()
         self._render_env()
         return self.get_bitmap()
 
     def _step(self, action):
+        print(action, int(action))
         action = int(action)
         assert 0 <= action < self.action_space.n
         
         rew, done = self._step_env(action)
+        self.step_cnt += 1
+        print(self.step_cnt)
+        if self.max_step > 0 and self.step_cnt > self.max_step:
+            done = True
         self._render_env()
         obs = self.get_bitmap()
         info = None
 
-        if self.tk is not None:
+        if self.tk is not None and not self.show_gui:
             time.sleep(self.spf)
             self.tk.update()
 
@@ -112,23 +125,25 @@ class GridEnv(gym.Env):
         arr = np.array(self.image.getdata()).reshape((*self.frame_size, 3))
         return arr.astype('float32')
 
-    def set_keys_action(self, keys, action):
-        self.key_map[keys] = action
+    def set_key_action(self, key, action):
+        self.key_map[key] = action
 
     # Tk GUI setup
     def gui_start(self):
         self._render()
-        self._init()
+        self.init(show_gui=True)
         self.canvas.bind("<Key>", self.gui_onkey)
         self.canvas.focus_set()
         self.tk.after(1000//self.FPS, self.gui_step)
         self.tk.mainloop()
 
     def gui_step(self):
-        rew, done = self._step_env(self.last_action)
-        self.last_action = None
-        if abs(rew) > 1e-9:
-            print('Get reward = %.2f' % rew)
+        if self.last_action is not None:
+            print(self.last_action)
+            obs, rew, done, info = self._step(self.last_action)
+            self.last_action = None
+            if abs(rew) > 1e-9:
+                print('Get reward = %.2f' % rew)
         self._render_env()
 
         self.gui_photo = ImageTk.PhotoImage(self.image.resize(self.gui_size))
