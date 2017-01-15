@@ -1,10 +1,7 @@
 import numpy as np
 from enum import IntEnum
 
-if __name__ == '__main__':
-    from grid import GridEnv
-else:
-    from .grid import GridEnv
+from .grid import GridEnv
 
 class TaskType(IntEnum):
     pick = 0b1
@@ -26,8 +23,17 @@ class PickputEnv(GridEnv):
 
     metatdata = {'render.modes': ['human']}
 
-    def __init__(self, *, task_type=TaskType.pick, max_step=500):
-        super().__init__(action_types, (10, 10), (6, 6), max_step=max_step)
+    def __init__(self):
+        super().__init__();
+        self._is_configured = False
+
+    def __del__(self):
+        super().__del__()
+
+    def _configure(self, grid_size=(10, 10), block_size=(4, 4),
+                   task_type=TaskType.pick, max_step=500, **kwargs):
+        super()._configure(action_types, (10, 10), (6, 6),
+                           max_step=max_step, **kwargs)
         self.state = None
         self.first_pick = True
         self.task_type = task_type
@@ -35,17 +41,12 @@ class PickputEnv(GridEnv):
         self.player_pos = None
         self.obj_pos = None
         self.mark_pos = None
-
-        self.last_act = None
-
-        self.set_key_action('Up', Action.up)
-        self.set_key_action('Down', Action.down)
-        self.set_key_action('Left', Action.left)
-        self.set_key_action('Right', Action.right)
-        self.set_key_action('x', Action.pick)
-        self.set_key_action('z', Action.put)
+        self._is_configured = True
 
     def _init(self):
+        if not self._is_configured:
+            self._configure()
+
         self.player_pos = self.randpos()
 
         self.first_pick = self.task_type != TaskType.put
@@ -97,6 +98,7 @@ class PickputEnv(GridEnv):
             else:
                 self.state = State.start
                 self.obj_pos = self.player_pos
+                rew -= 1
 
         done = False
         if self.state == State.end:
@@ -126,19 +128,3 @@ class PickputEnv(GridEnv):
             self.draw.ellipse(loc, fill=(0, 255, 255, 0))
         else:
             self.draw.ellipse(loc, fill='blue')
-
-if __name__ == '__main__':
-    import sys
-    task = TaskType.pick
-    if len(sys.argv) > 1:
-        task_name = sys.argv[1]
-        if task_name == 'put':
-            task = TaskType.put
-        elif task_name == 'both':
-            task = TaskType.both
-    env = PickputEnv(task_type=task)
-    try:
-        env.gui_start()
-    except KeyboardInterrupt:
-        pass
-
