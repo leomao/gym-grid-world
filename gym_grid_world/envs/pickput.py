@@ -1,7 +1,8 @@
 import numpy as np
 from enum import IntEnum
 
-from .grid import GridEnv
+from .point import Point
+from .grid import GridEnv, Point
 
 class TaskType(IntEnum):
     pick = 0b1
@@ -17,7 +18,12 @@ State = IntEnum('State', [
 action_types = [ 'stay', 'up', 'down', 'left', 'right', 'pick', 'put', ]
 Action = IntEnum('Action', action_types, start=0)
 
-Movesets = [Action.up, Action.down, Action.left, Action.right]
+Movesets = {
+    Action.up: Point(0, -1),
+    Action.down: Point(0, 1),
+    Action.right: Point(1, 0),
+    Action.left: Point(-1, 0),
+}
 
 class PickputEnv(GridEnv):
 
@@ -32,7 +38,7 @@ class PickputEnv(GridEnv):
 
     def _configure(self, grid_size=(10, 10), block_size=(4, 4),
                    task_type=TaskType.pick, max_step=500, **kwargs):
-        super()._configure(action_types, (10, 10), (6, 6),
+        super()._configure(action_types, grid_size, block_size,
                            max_step=max_step, **kwargs)
         self.state = None
         self.first_pick = True
@@ -47,16 +53,16 @@ class PickputEnv(GridEnv):
         if not self._is_configured:
             self._configure()
 
-        self.player_pos = self.randpos()
+        self.player_pos = self.rand_pos()
 
         self.first_pick = self.task_type != TaskType.put
         self.state = State.start
         if self.task_type & TaskType.pick:
-            self.obj_pos = self.randpos()
+            self.obj_pos = self.rand_pos()
         else:
             self.state = State.picked
         if self.task_type & TaskType.put:
-            self.mark_pos = self.randpos([self.obj_pos])
+            self.mark_pos = self.rand_pos([self.obj_pos])
 
     def _step_env(self, act):
         if act is None:
@@ -65,24 +71,17 @@ class PickputEnv(GridEnv):
         if act == Action.stay:
             return 0, False
         if act in Movesets:
-            x, y = self.player_pos
-            nx, ny = self.player_pos
-            if act == Action.up:
-                (nx, ny) = (x, y-1)
-            elif act == Action.down:
-                (nx, ny) = (x, y+1)
-            elif act == Action.left:
-                (nx, ny) = (x-1, y)
-            elif act == Action.right:
-                (nx, ny) = (x+1, y)
-            real_pos = (
-                max(0, min(self.grid_size[0]-1, nx)),
-                max(0, min(self.grid_size[1]-1, ny)),
-            )
+            self.player_pos += Movesets[act]
+
+            x = self.player_pos.x
+            y = self.player_pos.y
+            self.player_pos.x = np.clip(x, 0, self.grid_size[0]-1)
+            self.player_pos.y = np.clip(y, 0, self.grid_size[1]-1)
+
+            # penalty
+            if x == self.player_pos.x and y == self.player_pos.y:
+                rew -= 1
             
-            self.player_pos = real_pos
-            pen = 0 if real_pos == (nx, ny) else -1
-            rew += pen
         elif act == Action.pick and self.state == State.start:
             if self.obj_pos == self.player_pos:
                 self.state = State.picked
@@ -113,17 +112,17 @@ class PickputEnv(GridEnv):
 
         # draw obj
         if self.obj_pos and self.state == State.start:
-            px, py = self.get_frame_pos(self.obj_pos)
-            self.draw.rectangle((px - 2, py - 2, px + 2, py + 2), fill='green')
+            loc = self.get_frame_rect(self.obj_pos)
+            self.draw.rectangle(loc, fill='green')
             
         # draw mark
         if self.mark_pos:
-            px, py = self.get_frame_pos(self.mark_pos)
-            self.draw.rectangle((px - 2, py - 2, px + 2, py + 2), outline='white')
+            loc = self.get_frame_rect(self.mark_pos)
+            self.draw.rectangle(loc, outline='white')
 
         # draw player
-        px, py = self.get_frame_pos(self.player_pos)
-        loc = (px - 2, py - 2, px + 2, py + 2)
+        loc = self.get_frame_rect(self.player_pos)
+        print(loc)
         if self.state == State.picked:
             self.draw.ellipse(loc, fill=(0, 255, 255, 0))
         else:

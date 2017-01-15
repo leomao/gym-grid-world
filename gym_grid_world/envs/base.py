@@ -60,13 +60,11 @@ class BaseEnv(gym.Env):
         return self.get_bitmap()
 
     def _step(self, action):
-        print(action, int(action))
         action = int(action)
         assert 0 <= action < self.action_space.n
         
         rew, done = self._step_env(action)
         self.step_cnt += 1
-        print(self.step_cnt)
         if self.max_step > 0 and self.step_cnt > self.max_step:
             done = True
         self._render_env()
