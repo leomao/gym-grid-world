@@ -1,7 +1,6 @@
 import numpy as np
 from enum import IntEnum
 
-from .point import Point
 from .grid import GridEnv, Point
 
 class TaskType(IntEnum):
