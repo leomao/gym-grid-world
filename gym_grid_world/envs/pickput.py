@@ -121,7 +121,6 @@ class PickputEnv(GridEnv):
 
         # draw player
         loc = self.get_frame_rect(self.player_pos)
-        print(loc)
         if self.state == State.picked:
             self.draw.ellipse(loc, fill=(0, 255, 255, 0))
         else:
