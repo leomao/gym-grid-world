@@ -1,7 +1,7 @@
 Grid World Environments
 ===
 
-Use [env_viewer](env_viewer) to view the environment.
+Use [env_viewer][env_viewer] to view the environment.
 
 ## How to Use
 
