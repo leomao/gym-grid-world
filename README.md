@@ -11,11 +11,17 @@ import gym_grid_world
 
 env = gym.make('pickput2d-v0')
 
-env.configure(name='pickput') # configure name to view it via env_viewer
+# configure the view_name
+env.configure(view_name='pickput')
+
+# start to send observation to env_viewer
+env.render()
 
 # gym compatible
 # obs = env.reset()
 # obs, rew, done, info = env.step(action)
+
+env.render(close=True)
 ```
 
 ## Environments

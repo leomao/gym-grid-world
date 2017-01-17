@@ -29,6 +29,10 @@ class Point:
     def to_tuple(self):
         return (self.x, self.y)
 
+    def __iter__(self):
+        yield self.x
+        yield self.y
+
     def __repr__(self):
         return '(%s, %s)' % (self.x, self.y)
 
@@ -45,7 +49,7 @@ class GridEnv(SendEnv):
     '''
     Abstract class for grid environments
     '''
-    metatdata = {'render.modes': ['human']}
+    metadata = {'render.modes': ['human']}
 
     def __init__(self):
         super().__init__()

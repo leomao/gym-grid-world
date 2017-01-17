@@ -10,7 +10,7 @@ class BaseEnv(gym.Env):
     '''
     Abstract class for visual environments
     '''
-    metatdata = {'render.modes': ['human']}
+    metadata = {'render.modes': ['human']}
 
     def __init__(self):
         self._seed()

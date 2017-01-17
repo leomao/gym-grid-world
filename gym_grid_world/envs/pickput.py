@@ -26,7 +26,8 @@ Movesets = {
 
 class PickputEnv(GridEnv):
 
-    metatdata = {'render.modes': ['human']}
+    metadata = {'render.modes': ['human']}
+    reward_range = (-1., 6)
 
     def __init__(self):
         super().__init__();
@@ -35,7 +36,7 @@ class PickputEnv(GridEnv):
     def __del__(self):
         super().__del__()
 
-    def _configure(self, grid_size=(10, 10), block_size=(4, 4),
+    def _configure(self, grid_size=(10, 10), block_size=(5, 5),
                    task_type=TaskType.pick, max_step=500, **kwargs):
         super()._configure(action_types, grid_size, block_size,
                            max_step=max_step, **kwargs)
@@ -72,8 +73,7 @@ class PickputEnv(GridEnv):
         if act in Movesets:
             self.player_pos += Movesets[act]
 
-            x = self.player_pos.x
-            y = self.player_pos.y
+            x, y = self.player_pos
             self.player_pos.x = np.clip(x, 0, self.grid_size[0]-1)
             self.player_pos.y = np.clip(y, 0, self.grid_size[1]-1)
 

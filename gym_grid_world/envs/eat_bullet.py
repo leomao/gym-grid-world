@@ -6,7 +6,7 @@ from .grid import GridEnv, Point
 
 class EatBulletEnv(GridEnv):
 
-    metatdata = {'render.modes': ['human']}
+    metadata = {'render.modes': ['human']}
 
     ActionNames = [ 'stay', 'up', 'down', 'left', 'right', ]
     Action = IntEnum('Action', ActionNames, start=0)
@@ -21,7 +21,7 @@ class EatBulletEnv(GridEnv):
         super().__init__();
         self._is_configured = False
 
-    def _configure(self, grid_size=(10, 10), block_size=(4, 4),
+    def _configure(self, grid_size=(10, 10), block_size=(5, 5),
                    food_n: int = 3,
                    max_step: int = 500,
                    **kwargs):
@@ -52,8 +52,9 @@ class EatBulletEnv(GridEnv):
         if act in self.Movesets:
             self.player_pos += self.Movesets[act]
 
-            self.player_pos.x = np.clip(self.player_pos.x, 0, self.grid_size[0]-1)
-            self.player_pos.y = np.clip(self.player_pos.y, 0, self.grid_size[1]-1)
+            x, y = self.player_pos
+            self.player_pos.x = np.clip(x, 0, self.grid_size[0]-1)
+            self.player_pos.y = np.clip(y, 0, self.grid_size[1]-1)
 
         rew += self._check_eaten()
 
