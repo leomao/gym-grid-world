@@ -7,6 +7,7 @@ from .grid import GridEnv, Point
 class EatBulletEnv(GridEnv):
 
     metadata = {'render.modes': ['human']}
+    reward_range = (0., 1.)
 
     ActionNames = [ 'stay', 'up', 'down', 'left', 'right', ]
     Action = IntEnum('Action', ActionNames, start=0)
@@ -36,11 +37,10 @@ class EatBulletEnv(GridEnv):
         if not self._is_configured:
             self._configure()
 
-        self.foods_pos = []
-        for i in range(4):
-            self.foods_pos.append(self.rand_pos(set(self.foods_pos)))
-
-        self.player_pos = self.rand_pos(set(self.foods_pos))
+        pos_cnt = 1 + self.food_n
+        pos_list = self.rand_pos(size=pos_cnt)
+        self.player_pos = pos_list.pop()
+        self.foods_pos = set(pos_list)
 
     def _step_env(self, act) -> Tuple[float, bool]:
         if act is None:
@@ -50,24 +50,24 @@ class EatBulletEnv(GridEnv):
             return 0., False
 
         if act in self.Movesets:
+            prev_pos = self.player_pos
             self.player_pos += self.Movesets[act]
 
-            x, y = self.player_pos
-            self.player_pos.x = np.clip(x, 0, self.grid_size[0]-1)
-            self.player_pos.y = np.clip(y, 0, self.grid_size[1]-1)
+            if not self.is_in_map(self.player_pos):
+                self.player_pos = prev_pos
 
         rew += self._check_eaten()
 
         return rew, False
 
     def _check_eaten(self) -> float:
-        if self.player_pos not in self.foods_pos:
+        if self.player_pos in self.foods_pos:
+            new_food_pos = self.rand_pos(skip=set(self.foods_pos))
+            self.foods_pos.remove(self.player_pos)
+            self.foods_pos.add(new_food_pos)
+            return 1.
+        else:
             return 0.
-
-        self.foods_pos.remove(self.player_pos)
-        self.foods_pos.append(self.rand_pos(self.foods_pos))
-
-        return 1.
 
     def _render_env(self):
         # clear canvas

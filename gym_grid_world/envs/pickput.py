@@ -27,7 +27,7 @@ Movesets = {
 class PickputEnv(GridEnv):
 
     metadata = {'render.modes': ['human']}
-    reward_range = (-1., 6)
+    reward_range = (-1., 6.)
 
     def __init__(self):
         super().__init__();
@@ -62,7 +62,7 @@ class PickputEnv(GridEnv):
         else:
             self.state = State.picked
         if self.task_type & TaskType.put:
-            self.mark_pos = self.rand_pos([self.obj_pos])
+            self.mark_pos = self.rand_pos(skip=set([self.obj_pos]))
 
     def _step_env(self, act):
         if act is None:
@@ -71,14 +71,14 @@ class PickputEnv(GridEnv):
         if act == Action.stay:
             return 0, False
         if act in Movesets:
+            prev_pos = self.player_pos
             self.player_pos += Movesets[act]
 
-            x, y = self.player_pos
-            self.player_pos.x = np.clip(x, 0, self.grid_size[0]-1)
-            self.player_pos.y = np.clip(y, 0, self.grid_size[1]-1)
+            if not self.is_in_map(self.player_pos):
+                self.player_pos = prev_pos
 
             # penalty
-            if x == self.player_pos.x and y == self.player_pos.y:
+            if self.player_pos == prev_pos:
                 rew -= 1
             
         elif act == Action.pick and self.state == State.start:

@@ -63,11 +63,32 @@ class GridEnv(SendEnv):
         super()._configure(actions, self.frame_size, **kwargs)
 
     # utils functions
-    def rand_pos(self, skip=set()):
-        pos = Point(self.np_random.randint(x) for x in self.grid_size)
-        while pos in skip:
-            pos = Point(self.np_random.randint(x) for x in self.grid_size)
-        return pos
+    def rand_pos(self, size=None, skip=set(), replace=False):
+        skip_n = len(skip)
+        all_n = self.grid_size[0] * self.grid_size[1]
+        valid_n = all_n - skip_n
+
+        def n_to_pos(pos_n):
+            return Point(pos_n // self.grid_size[1], pos_n % self.grid_size[1])
+
+        reverse_map = {pos: n_to_pos(i)
+                       for pos, i in zip(skip, range(valid_n, all_n))}
+
+        if size is None:
+            pos = n_to_pos(self.np_random.randint(valid_n))
+            if pos in skip:
+                pos = reverse_map[pos]
+            return pos
+        else:
+            pos_n_list = self.np_random.choice(valid_n, size, replace=replace)
+            pos_list = [n_to_pos(x) for x in pos_n_list]
+            pos_list = [reverse_map[pos] if pos in skip else pos
+                        for pos in pos_list]
+            return pos_list
+
+    def is_in_map(self, pos):
+        return (pos.x >= 0 and pos.x < self.grid_size[0] and
+                pos.y >= 0 and pos.y < self.grid_size[1])
 
     def get_frame_rect(self, pt: Point) -> Tuple[int, int, int, int]:
         '''
