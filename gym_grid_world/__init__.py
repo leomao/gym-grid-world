@@ -10,7 +10,6 @@ register(
     entry_point='gym_grid_world.envs:EatBulletEnv',
 )
 
-
 register(
     id='pushblock2d-v0',
     entry_point='gym_grid_world.envs:PushBlockEnv',

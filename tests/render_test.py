@@ -36,6 +36,6 @@ while True:
     except KeyboardInterrupt:
         break
 
-env0.close()
-env1.close()
-env2.close()
+env0.render(close=True)
+env1.render(close=True)
+env2.render(close=True)
