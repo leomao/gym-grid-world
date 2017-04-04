@@ -18,12 +18,12 @@ class SendEnv(BaseEnv):
     def _close(self):
         self.__stop_sender()
 
-    def _configure(self, actions, frame_size, *, max_step=-1, view_name='',
-                   FPS=20, viewer_host='localhost', viewer_port=12345):
+    def configure(self, actions, frame_size, *, max_step=-1, view_name='',
+                  FPS=20, viewer_host='localhost', viewer_port=12345):
         '''
         Usage:
         '''
-        super()._configure(actions, frame_size, max_step=max_step)
+        super().configure(actions, frame_size, max_step=max_step)
         self.FPS = FPS
         self.view_name = view_name
         self.__viewer_host = viewer_host

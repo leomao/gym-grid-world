@@ -54,13 +54,12 @@ class GridEnv(SendEnv):
     def __init__(self):
         super().__init__()
 
-    def _configure(self, actions, grid_size, block_size,
-                   **kwargs):
+    def configure(self, actions, grid_size, block_size, **kwargs):
         self.grid_size = grid_size
         self.block_size = block_size
         self.frame_size = tuple(x * y for x, y in zip(grid_size, block_size))
 
-        super()._configure(actions, self.frame_size, **kwargs)
+        super().configure(actions, self.frame_size, **kwargs)
 
     # utils functions
     def rand_pos(self, size=None, skip=set(), replace=False):

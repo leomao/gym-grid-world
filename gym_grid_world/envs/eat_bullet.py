@@ -22,12 +22,12 @@ class EatBulletEnv(GridEnv):
         super().__init__();
         self._is_configured = False
 
-    def _configure(self, grid_size=(10, 10), block_size=(5, 5),
-                   food_n: int = 3,
-                   max_step: int = 500,
-                   **kwargs):
-        super()._configure(self.ActionNames, grid_size, block_size,
-                           max_step=max_step, **kwargs)
+    def configure(self, grid_size=(10, 10), block_size=(5, 5),
+                  food_n: int = 3,
+                  max_step: int = 500,
+                  **kwargs):
+        super().configure(self.ActionNames, grid_size, block_size,
+                          max_step=max_step, **kwargs)
         self.player_pos = None # type: Point
         self.food_n = food_n
         self.foods_pos = [] # type: List[Point]

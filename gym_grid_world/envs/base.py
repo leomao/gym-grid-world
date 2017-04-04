@@ -14,9 +14,9 @@ class BaseEnv(gym.Env):
 
     def __init__(self):
         self._seed()
-        self.__is_configured = False
+        self.__configured = False
 
-    def _configure(self, actions, frame_size, *, max_step=-1):
+    def configure(self, actions, frame_size, *, max_step=-1):
         '''
         Usage:
         self.super()._configure(actions, frame_size)
@@ -31,11 +31,11 @@ class BaseEnv(gym.Env):
 
         self.action_space = spaces.Discrete(len(actions))
         self.observation_space = spaces.Box(0., 255., (*self.frame_size, 3))
-        self.__is_configured = True
+        self.__configured = True
 
     def init(self):
         self._init()
-        if not self.__is_configured:
+        if not self.__configured:
             raise NotImplementedError
 
     # should be implemented

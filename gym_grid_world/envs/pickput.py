@@ -36,10 +36,10 @@ class PickputEnv(GridEnv):
     def __del__(self):
         super().__del__()
 
-    def _configure(self, grid_size=(10, 10), block_size=(5, 5),
-                   task_type=TaskType.pick, max_step=500, **kwargs):
-        super()._configure(action_types, grid_size, block_size,
-                           max_step=max_step, **kwargs)
+    def configure(self, grid_size=(10, 10), block_size=(5, 5),
+                  task_type=TaskType.pick, max_step=500, **kwargs):
+        super().configure(action_types, grid_size, block_size,
+                          max_step=max_step, **kwargs)
         self.state = None
         self.first_pick = True
         self.task_type = task_type
