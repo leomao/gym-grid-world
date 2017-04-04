@@ -23,7 +23,7 @@ class SendEnv(BaseEnv):
         '''
         Usage:
         '''
-        super()._configure(actions, frame_size)
+        super()._configure(actions, frame_size, max_step=max_step)
         self.FPS = FPS
         self.view_name = view_name
         self.__viewer_host = viewer_host

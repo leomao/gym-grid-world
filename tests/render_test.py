@@ -22,12 +22,15 @@ env2.configure(view_name='bullet', food_n=10)
 env2.render()
 env2.reset()
 
+cnt = 0
 while True:
+    cnt += 1
     try:
         time.sleep(0.02)
         _, _, done0, _ = env0.step(np.random.randint(env0.action_space.n))
         _, _, done1, _ = env1.step(np.random.randint(env1.action_space.n))
         _, _, done2, _ = env2.step(np.random.randint(env2.action_space.n))
+        print(done0, done1, done2, cnt)
         if done0 and done1 and done2:
             break
     except KeyboardInterrupt:
