@@ -17,7 +17,7 @@ class Point:
     def __add__(self, he: 'Point'):
         return Point(self.x + he.x, self.y + he.y)
 
-    def __minus__(self, he: 'Point'):
+    def __sub__(self, he: 'Point'):
         return Point(self.x - he.x, self.y - he.y)
 
     def __mul__(self, v):
