@@ -13,7 +13,7 @@ env1.configure(task_type=TaskType.both)
 env1.reset()
 
 env2 = gym.make('eatbullet2d-v0')
-env2.configure(food_n=10)
+env2.configure(food_n=10, center=True, view_radius=(2, 2))
 env2.reset()
 
 cnt = 0

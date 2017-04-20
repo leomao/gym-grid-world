@@ -48,6 +48,9 @@ class BaseEnv(gym.Env):
     def _render_env(self):
         raise NotImplementedError
 
+    def get_info(self):
+        return {}
+
     # gym.Env functions
     def _seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
@@ -62,7 +65,7 @@ class BaseEnv(gym.Env):
     def _step(self, action):
         action = int(action)
         assert 0 <= action < self.action_space.n
-        
+
         rew, done = self._step_env(action)
         self.step_cnt += 1
         if self.max_step > 0 and self.step_cnt > self.max_step:

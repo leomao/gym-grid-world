@@ -68,7 +68,7 @@ class PushBlockEnv(GridEnv):
             x, y = self.player_pos
             if not self.is_in_map(self.player_pos):
                 self.player_pos = prev_pos
-            
+
             if self.player_pos in self.obj_set:
                 new_obj_pos = self.player_pos + Movesets[act]
                 if (self.is_in_map(new_obj_pos) and
@@ -92,7 +92,10 @@ class PushBlockEnv(GridEnv):
 
         return rew, done
 
-    def _render_env(self):
+    def get_center(self):
+        return self.player_pos
+
+    def _render_grid(self):
         # clear canvas
         self.draw.rectangle((0, 0, *self.frame_size), fill='black')
 
@@ -104,7 +107,7 @@ class PushBlockEnv(GridEnv):
         for obj_pos in self.obj_set:
             loc = self.get_frame_rect(obj_pos)
             self.draw.rectangle(loc, fill='green')
-            
+
         # draw mark
         for mark_pos in self.mark_set:
             loc = self.get_frame_rect(mark_pos)

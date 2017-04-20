@@ -80,7 +80,7 @@ class PickputEnv(GridEnv):
             # penalty
             if self.player_pos == prev_pos:
                 rew -= 1
-            
+
         elif act == Action.pick and self.state == State.start:
             if self.obj_pos == self.player_pos:
                 self.state = State.picked
@@ -105,7 +105,10 @@ class PickputEnv(GridEnv):
 
         return rew, done
 
-    def _render_env(self):
+    def get_center(self):
+        return self.player_pos
+
+    def _render_grid(self):
         # clear canvas
         self.draw.rectangle((0, 0, *self.frame_size), fill='black')
 
@@ -113,7 +116,7 @@ class PickputEnv(GridEnv):
         if self.obj_pos and self.state == State.start:
             loc = self.get_frame_rect(self.obj_pos)
             self.draw.rectangle(loc, fill='green')
-            
+
         # draw mark
         if self.mark_pos:
             loc = self.get_frame_rect(self.mark_pos)

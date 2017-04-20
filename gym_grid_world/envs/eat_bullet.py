@@ -19,7 +19,7 @@ class EatBulletEnv(GridEnv):
     }
 
     def __init__(self) -> None:
-        super().__init__();
+        super().__init__()
         self._is_configured = False
 
     def configure(self, grid_size=(10, 10), block_size=(5, 5),
@@ -69,7 +69,10 @@ class EatBulletEnv(GridEnv):
         else:
             return 0.
 
-    def _render_env(self):
+    def get_center(self):
+        return self.player_pos
+
+    def _render_grid(self):
         # clear canvas
         self.draw.rectangle((0, 0, *self.frame_size), fill='black')
 
