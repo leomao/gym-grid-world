@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw
 
 class BaseEnv(gym.Env):
     '''
-    Abstract class for visual environments
+    Abstract class for visual environments rendered by PIL
     '''
     metadata = {'render.modes': ['human']}
 

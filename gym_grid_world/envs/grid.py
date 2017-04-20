@@ -3,7 +3,7 @@ import collections
 import numpy as np
 from typing import Tuple
 
-from .sendenv import SendEnv
+from .base import BaseEnv
 
 @total_ordering
 class Point:
@@ -45,7 +45,7 @@ class Point:
     def __hash__(self):
         return hash(self.to_tuple())
 
-class GridEnv(SendEnv):
+class GridEnv(BaseEnv):
     '''
     Abstract class for grid environments
     '''

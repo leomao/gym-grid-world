@@ -5,21 +5,15 @@ import gym_grid_world
 from gym_grid_world.envs.pickput import TaskType
 
 env0 = gym.make('pushblock2d-v0')
-env0.configure(view_name='push', obj_n=2)
-# you will need to run env_viewer server separately
-env0.render()
+env0.configure(obj_n=2)
 env0.reset()
 
 env1 = gym.make('pickput2d-v0')
-env1.configure(view_name='pickput', task_type=TaskType.both)
-# you will need to run env_viewer server separately
-env1.render()
+env1.configure(task_type=TaskType.both)
 env1.reset()
 
 env2 = gym.make('eatbullet2d-v0')
-env2.configure(view_name='bullet', food_n=10)
-# you will need to run env_viewer server separately
-env2.render()
+env2.configure(food_n=10)
 env2.reset()
 
 cnt = 0
@@ -35,7 +29,3 @@ while True:
             break
     except KeyboardInterrupt:
         break
-
-env0.render(close=True)
-env1.render(close=True)
-env2.render(close=True)
