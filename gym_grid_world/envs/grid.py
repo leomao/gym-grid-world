@@ -16,10 +16,12 @@ class Point:
             self.y = y
 
     def __add__(self, he: 'Point'):
-        return Point(self.x + he.x, self.y + he.y)
+        he = tuple(he)
+        return Point(self.x + he[0], self.y + he[1])
 
     def __sub__(self, he: 'Point'):
-        return Point(self.x - he.x, self.y - he.y)
+        he = tuple(he)
+        return Point(self.x - he[0], self.y - he[1])
 
     def __mul__(self, v):
         return Point(v * self.x, v * self.y)
@@ -38,10 +40,10 @@ class Point:
         return '(%s, %s)' % (self.x, self.y)
 
     def __lt__(self, he: 'Point'):
-        return self.to_tuple() < he.to_tuple()
+        return self.to_tuple() < tuple(he)
 
     def __eq__(self, he: 'Point'):
-        return self.to_tuple() == he.to_tuple()
+        return self.to_tuple() == tuple(he)
 
     def __hash__(self):
         return hash(self.to_tuple())
