@@ -5,32 +5,35 @@ import gym_grid_world
 from gym_grid_world.envs.pickput import TaskType
 import cv2
 
-env0 = gym.make('pushblock2d-v0')
-env0.configure(obj_n=2)
-env0.reset()
+env = gym.make('eatbullet2d-v0')
+env.configure(center=True, view_radius=(5, 5))
 
-env1 = gym.make('pickput2d-v0')
-env1.configure(task_type=TaskType.both)
-env1.reset()
-
-env2 = gym.make('eatbullet2d-v0')
-env2.configure(food_n=10, center=True, view_radius=(2, 2))
-env2.reset()
+act_map = { 81: 3, 82: 1, 83: 4, 84: 2 }
 
 cnt = 0
+total_rew = 0
+obs = env.reset()
+
 while True:
     cnt += 1
     try:
-        time.sleep(0.02)
-        _, _, done0, _ = env0.step(env0.action_space.sample())
-        _, _, done1, _ = env1.step(env1.action_space.sample())
-        obs, _, done2, _ = env2.step(env2.action_space.sample())
-        print(done0, done1, done2, cnt)
         ss = cv2.resize(obs[:,:,::-1].astype('uint8'), (400, 400))
         cv2.imshow('obs', ss)
-        cv2.waitKey(100)
+        k = cv2.waitKey()
 
-        if done0 and done1 and done2:
+        act = act_map.get(k, 0)
+
+        if np.random.random() < 0.05:
+            act = env.action_space.sample()
+
+        obs, rew, done, _ = env.step(act)
+        total_rew += rew
+        print(total_rew, cnt, done)
+
+        if done:
+            ss = cv2.resize(obs[:,:,::-1].astype('uint8'), (400, 400))
+            cv2.imshow('obs', ss)
+            k = cv2.waitKey()
             break
     except KeyboardInterrupt:
         break
