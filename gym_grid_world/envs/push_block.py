@@ -105,7 +105,7 @@ class PushBlockEnv(GridEnv):
 
     def _render_grid(self):
         # clear canvas
-        self.draw.rectangle((0, 0, *self.frame_size), fill='black')
+        self.draw.rectangle((0, 0, *self.frame_size), fill='#333')
 
         # draw player
         loc = self.get_frame_rect(self.player_pos)

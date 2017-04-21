@@ -110,7 +110,7 @@ class PickputEnv(GridEnv):
 
     def _render_grid(self):
         # clear canvas
-        self.draw.rectangle((0, 0, *self.frame_size), fill='black')
+        self.draw.rectangle((0, 0, *self.frame_size), fill='#333')
 
         # draw obj
         if self.obj_pos and self.state == State.start:
