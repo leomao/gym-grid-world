@@ -85,12 +85,12 @@ class GridEnv(BaseEnv):
         def n_to_pos(pos_n):
             return Point(pos_n // self.grid_size[1], pos_n % self.grid_size[1])
 
-        reverse_map = {pos: n_to_pos(i)
-                       for pos, i in zip(skip, range(valid_n, all_n))}
+        rev_pos = set(n_to_pos(i) for i in range(valid_n, all_n))
+        reverse_map = {p: q for p, q in zip(skip - rev_pos, rev_pos - skip)}
 
         if size is None:
             pos = n_to_pos(self.np_random.randint(valid_n))
-            if pos in skip:
+            if pos in reverse_map:
                 pos = reverse_map[pos]
             return pos
         else:

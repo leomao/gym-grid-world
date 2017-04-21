@@ -62,7 +62,7 @@ class EatBulletEnv(GridEnv):
 
     def _check_eaten(self) -> float:
         if self.player_pos in self.foods_pos:
-            new_food_pos = self.rand_pos(skip=set(self.foods_pos))
+            new_food_pos = self.rand_pos(skip=self.foods_pos)
             self.foods_pos.remove(self.player_pos)
             self.foods_pos.add(new_food_pos)
             return 1.
