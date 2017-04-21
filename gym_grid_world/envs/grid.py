@@ -120,7 +120,7 @@ class GridEnv(BaseEnv):
             t_top = max(top, 0)
             right = min(right, self.whole_size[0])
             bot = min(bot, self.whole_size[1])
-            crop = self.whole_image.crop((t_left, t_top, right, bot))
+            crop = self.whole_image.crop((t_left, t_top, right + 1, bot + 1))
             self.image.paste(crop, box=(t_left - left, t_top - top))
 
     def get_info(self):

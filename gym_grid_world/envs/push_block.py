@@ -48,12 +48,20 @@ class PushBlockEnv(GridEnv):
 
         self.state = State.start
 
-        pos_cnt = 1 + self.obj_n * 2
-        pos_list = self.rand_pos(size=pos_cnt)
+        w, h = self.grid_size
+        lb = set((0, x) for x in range(h))
+        tb = set((x, 0) for x in range(w))
+        rb = set((w-1, x) for x in range(h))
+        bb = set((x, h-1) for x in range(w))
+        edges = lb | tb | rb | bb
+
+        self.obj_set = set(self.rand_pos(size=self.obj_n, skip=edges))
+
+        pos_cnt = 1 + self.obj_n
+        pos_list = self.rand_pos(size=pos_cnt, skip=self.obj_set)
 
         self.player_pos = pos_list.pop()
-        self.obj_set = set(pos_list[:self.obj_n])
-        self.mark_set = set(pos_list[self.obj_n:])
+        self.mark_set = set(pos_list)
 
     def _step_env(self, act):
         if act is None:
