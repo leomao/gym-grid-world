@@ -81,5 +81,5 @@ class BaseEnv(gym.Env):
 
     # utils functions
     def get_bitmap(self):
-        arr = np.array(self.image.getdata()).reshape((*self.frame_size, 3))
+        arr = np.array(self.image).reshape((*self.frame_size, 3))
         return arr.astype('float32')
