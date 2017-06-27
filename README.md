@@ -12,9 +12,6 @@ env = gym.make('pickput2d-v0')
 # configure the enviroments
 env.configure(...)
 
-# start to send observation to env_viewer
-env.render()
-
 # gym compatible
 # obs = env.reset()
 # obs, rew, done, info = env.step(action)

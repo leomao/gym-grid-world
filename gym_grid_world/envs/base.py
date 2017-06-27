@@ -10,7 +10,7 @@ class BaseEnv(gym.Env):
     '''
     Abstract class for visual environments rendered by PIL
     '''
-    metadata = {'render.modes': ['human']}
+    metadata = {'render.modes': ['human', 'rgb_array']}
 
     def __init__(self):
         self._seed()
@@ -19,7 +19,7 @@ class BaseEnv(gym.Env):
     def configure(self, actions, frame_size, *, max_step=-1):
         '''
         Usage:
-        self.super()._configure(actions, frame_size)
+            self.super()._configure(actions, frame_size)
         '''
         self.frame_size = frame_size
 
@@ -77,7 +77,8 @@ class BaseEnv(gym.Env):
         return obs, rew, done, info
 
     def _render(self, mode='human', close=False):
-        pass
+        if mode == 'rgb_array':
+            return self.get_bitmap()
 
     # utils functions
     def get_bitmap(self):
