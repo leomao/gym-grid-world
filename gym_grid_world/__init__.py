@@ -14,3 +14,13 @@ register(
     id='pushblock2d-v0',
     entry_point='gym_grid_world.envs:PushBlockEnv',
 )
+
+register(
+    id='eatbulletmem2d-v0',
+    entry_point='gym_grid_world.envs:EatBulletMemEnv',
+)
+
+register(
+    id='eatbulletpair2d-v0',
+    entry_point='gym_grid_world.envs:EatBulletPairEnv',
+)

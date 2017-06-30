@@ -48,6 +48,9 @@ class Point:
     def __hash__(self):
         return hash(self.to_tuple())
 
+    def abs(self):
+        return abs(self.x) + abs(self.y)
+
 class GridEnv(BaseEnv):
     '''
     Abstract class for grid environments
