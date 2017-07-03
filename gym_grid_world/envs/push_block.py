@@ -100,7 +100,7 @@ class PushBlockEnv(GridEnv):
 
         return rew, done
 
-    def get_center(self):
+    def _get_center(self):
         return self.player_pos
 
     def _render_grid(self):

@@ -118,7 +118,7 @@ class GridEnv(BaseEnv):
         self._render_grid()
         if self.center:
             self.view_draw.rectangle((0, 0, *self.frame_size), fill='black')
-            pos = self.get_center()
+            pos = self._get_center()
             left, top, _, _ = self.get_frame_rect(pos - self.view_radius)
             _, _, right, bot = self.get_frame_rect(pos + self.view_radius)
             t_left = max(left, 0)
@@ -135,3 +135,9 @@ class GridEnv(BaseEnv):
             'obs': obs,
             'map': mmap,
         }
+
+    def _get_center(self):
+        raise NotImplementedError
+
+    def _render_grid(self):
+        raise NotImplementedError

@@ -81,7 +81,7 @@ class EatBulletPairEnv(GridEnv):
         else:
             return 0.
 
-    def get_center(self):
+    def _get_center(self):
         return self.player_pos
 
     def _render_grid(self):
