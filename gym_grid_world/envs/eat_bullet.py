@@ -35,7 +35,7 @@ class EatBulletEnv(GridEnv):
 
     def _init(self):
         if not self._is_configured:
-            self._configure()
+            self.configure()
 
         pos_cnt = 1 + self.food_n
         pos_list = self.rand_pos(size=pos_cnt)

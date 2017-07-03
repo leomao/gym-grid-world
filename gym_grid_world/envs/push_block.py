@@ -44,7 +44,7 @@ class PushBlockEnv(GridEnv):
 
     def _init(self):
         if not self._is_configured:
-            self._configure()
+            self.configure()
 
         self.state = State.start
 
