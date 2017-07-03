@@ -29,6 +29,7 @@ class BaseEnv(gym.Env):
         self.max_step = max_step
         self.step_cnt = 0
 
+        self.actions = actions
         self.action_space = spaces.Discrete(len(actions))
         self.observation_space = spaces.Box(0., 255., (*self.frame_size, 3))
         self.__configured = True
