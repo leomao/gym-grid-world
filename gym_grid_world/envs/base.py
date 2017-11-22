@@ -16,12 +16,13 @@ class BaseEnv(gym.Env):
         self._seed()
         self.__configured = False
 
-    def configure(self, actions, frame_size, *, max_step=-1):
+    def configure(self, actions, frame_size, *, raw_array=False, max_step=-1):
         '''
         Usage:
             self.super()._configure(actions, frame_size)
         '''
         self.frame_size = frame_size
+        self.raw_array = raw_array
 
         self.image = Image.new('RGB', self.frame_size, 'black')
         self.draw = ImageDraw.Draw(self.image)
@@ -52,6 +53,9 @@ class BaseEnv(gym.Env):
     def get_info(self):
         return {}
 
+    def _get_raw_array(self):
+        raise NotImplementedError
+
     # gym.Env functions
     def _seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
@@ -60,8 +64,7 @@ class BaseEnv(gym.Env):
     def _reset(self):
         self.step_cnt = 0
         self.init()
-        self._render_env()
-        return self.get_bitmap()
+        return self.get_obs()
 
     def _step(self, action):
         action = int(action)
@@ -71,8 +74,7 @@ class BaseEnv(gym.Env):
         self.step_cnt += 1
         if self.max_step > 0 and self.step_cnt > self.max_step:
             done = True
-        self._render_env()
-        obs = self.get_bitmap()
+        obs = self.get_obs()
         info = None
 
         return obs, rew, done, info
@@ -82,6 +84,13 @@ class BaseEnv(gym.Env):
             return self.get_bitmap()
 
     # utils functions
+    def get_obs(self):
+        if self.raw_array:
+            return self._get_raw_array()
+        else:
+            self._render_env()
+            return self.get_bitmap()
+
     def get_bitmap(self):
         arr = np.array(self.image).reshape((*self.frame_size, 3))
         return arr.astype('float32')

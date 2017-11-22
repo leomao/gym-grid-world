@@ -3,6 +3,7 @@ import collections
 import numpy as np
 from typing import Tuple
 from PIL import Image, ImageDraw
+from gym import spaces
 
 from .base import BaseEnv
 
@@ -60,24 +61,38 @@ class GridEnv(BaseEnv):
     def __init__(self):
         super().__init__()
 
-    def configure(self, actions, grid_size, block_size, center=False,
-                  view_radius=(0, 0), **kwargs):
+    def configure(self,
+                  actions,
+                  grid_size: Tuple[int, int],
+                  block_size: int,
+                  n_features: int,
+                  center=False, view_radius=(0, 0),
+                  **kwargs):
         self.grid_size = grid_size
+        self.obs_size = grid_size
         self.block_size = block_size
         self.center = center
+        self.n_features = n_features
+        self.feature_map = np.zeros((*grid_size, n_features))
         if center:
+            self.obs_size = tuple(2*x+1 for x in view_radius)
+            self.obs_map = np.zeros((*self.obs_size, n_features))
             self.view_radius = Point(view_radius)
-            self.frame_size = tuple((2*x+1)*y for x, y in zip(view_radius, block_size))
+            self.frame_size = tuple(x*block_size for x in self.obs_size)
             super().configure(actions, self.frame_size, **kwargs)
 
-            self.whole_size = tuple(x*y for x, y in zip(grid_size, block_size))
+            self.whole_size = tuple(x*block_size for x in grid_size)
             self.whole_image = Image.new('RGB', self.whole_size, 'black')
             self.view_draw = self.draw
             self.draw = ImageDraw.Draw(self.whole_image)
         else:
-            self.frame_size = tuple(x*y for x, y in zip(grid_size, block_size))
+            self.obs_map = self.feature_map
+            self.frame_size = tuple(x*block_size for x in grid_size)
             super().configure(actions, self.frame_size, **kwargs)
             self.whole_size = self.frame_size
+
+        if self.raw_array:
+            self.observation_space = spaces.Box(0., 1., self.obs_map.shape)
 
     # utils functions
     def rand_pos(self, size=None, skip=set(), replace=False):
@@ -111,22 +126,46 @@ class GridEnv(BaseEnv):
         '''
         Return (xmin, ymin, xmax, ymax)
         '''
-        w, h = self.block_size
-        return (pt.x * w, pt.y * h, (pt.x+1) * w - 1, (pt.y+1) * h - 1)
+        s = self.block_size
+        return (pt.x * s, pt.y * s, (pt.x+1) * s - 1, (pt.y+1) * s - 1)
+
+    def _get_raw_array(self):
+        self._render_feature_map()
+        if self.center:
+            pos = self._get_center()
+            # left, top, right, bottom
+            l, t = pos - self.view_radius
+            r, b = pos + self.view_radius
+            r += 1
+            b += 1
+            # clipped value
+            lc = max(l, 0)
+            tc = max(t, 0)
+            rc = min(r, self.grid_size[0])
+            bc = min(b, self.grid_size[1])
+            # offset
+            lo = lc - l
+            to = tc - t
+            ro = self.obs_size[0] - r + rc
+            bo = self.obs_size[1] - b + bc
+            self.obs_map.fill(0)
+            self.obs_map[lo:ro,to:bo] = self.feature_map[lc:rc,tc:bc]
+        return self.obs_map
 
     def _render_env(self):
         self._render_grid()
         if self.center:
-            self.view_draw.rectangle((0, 0, *self.frame_size), fill='black')
             pos = self._get_center()
-            left, top, _, _ = self.get_frame_rect(pos - self.view_radius)
-            _, _, right, bot = self.get_frame_rect(pos + self.view_radius)
-            t_left = max(left, 0)
-            t_top = max(top, 0)
-            right = min(right, self.whole_size[0])
-            bot = min(bot, self.whole_size[1])
-            crop = self.whole_image.crop((t_left, t_top, right + 1, bot + 1))
-            self.image.paste(crop, box=(t_left - left, t_top - top))
+            l, t, _, _ = self.get_frame_rect(pos - self.view_radius)
+            _, _, r, b = self.get_frame_rect(pos + self.view_radius)
+            # clipped value
+            lc = max(l, 0)
+            tc = max(t, 0)
+            r = min(r, self.whole_size[0])
+            b = min(b, self.whole_size[1])
+            self.view_draw.rectangle((0, 0, *self.frame_size), fill='black')
+            crop = self.whole_image.crop((lc, tc, r + 1, b + 1))
+            self.image.paste(crop, box=(lc - l, tc - t))
 
     def get_info(self):
         obs = np.array(self.image.getdata()).reshape((*self.frame_size, 3))
@@ -137,6 +176,9 @@ class GridEnv(BaseEnv):
         }
 
     def _get_center(self):
+        raise NotImplementedError
+
+    def _render_feature_map(self):
         raise NotImplementedError
 
     def _render_grid(self):

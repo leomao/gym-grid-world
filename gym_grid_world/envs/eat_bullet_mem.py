@@ -16,6 +16,24 @@ class EatBulletMemEnv(EatBulletEnv):
         super().configure(**kwargs)
         self.disappear_dist = disappear_dist
 
+    def _render_feature_map(self):
+        self.feature_map.fill(0)
+        feat_cnt = 0
+
+        loc = tuple(self.player_pos)
+        self.feature_map[loc][feat_cnt] = 1
+        feat_cnt += 1
+
+        # draw foods
+        for pos in self.foods_pos:
+            dis = (self.player_pos - pos).abs()
+            if dis >= self.disappear_dist:
+                loc = tuple(pos)
+                self.feature_map[loc][feat_cnt] = 1
+        feat_cnt += 1
+
+        self.feature_map[:,:,feat_cnt] = 1
+
     def _render_grid(self):
         # clear canvas
         self.draw.rectangle((0, 0, *self.whole_size), fill='#333')

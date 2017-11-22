@@ -30,9 +30,10 @@ class PushBlockEnv(GridEnv):
     def __del__(self):
         super().__del__()
 
-    def configure(self, grid_size=(10, 10), block_size=(5, 5),
+    def configure(self, grid_size=(10, 10), block_size=5,
                   max_step=200, obj_n=1, **kwargs):
         super().configure(action_types, grid_size, block_size,
+                          n_features=4,
                           max_step=max_step, **kwargs)
         self.state = None
 
@@ -103,6 +104,28 @@ class PushBlockEnv(GridEnv):
     def _get_center(self):
         return self.player_pos
 
+    def _render_feature_map(self):
+        self.feature_map.fill(0)
+        feat_cnt = 0
+
+        loc = tuple(self.player_pos)
+        self.feature_map[loc][feat_cnt] = 1
+        feat_cnt += 1
+
+        # draw obj
+        for obj_pos in self.obj_set:
+            loc = tuple(obj_pos)
+            self.feature_map[loc][feat_cnt] = 1
+        feat_cnt += 1
+
+        # draw mark
+        for mark_pos in self.mark_set:
+            loc = tuple(mark_pos)
+            self.feature_map[loc][feat_cnt] = 1
+        feat_cnt += 1
+
+        self.feature_map[:,:,feat_cnt] = 1
+
     def _render_grid(self):
         # clear canvas
         self.draw.rectangle((0, 0, *self.frame_size), fill='#333')
@@ -119,5 +142,8 @@ class PushBlockEnv(GridEnv):
         # draw mark
         for mark_pos in self.mark_set:
             loc = self.get_frame_rect(mark_pos)
-            self.draw.rectangle(loc, outline='white')
+            if self.block_size == 1:
+                self.draw.rectangle(loc, fill='white')
+            else:
+                self.draw.rectangle(loc, outline='white')
 

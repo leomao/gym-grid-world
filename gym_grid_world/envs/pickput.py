@@ -36,9 +36,10 @@ class PickputEnv(GridEnv):
     def __del__(self):
         super().__del__()
 
-    def configure(self, grid_size=(10, 10), block_size=(5, 5),
+    def configure(self, grid_size=(10, 10), block_size=5,
                   task_type=TaskType.pick, max_step=500, **kwargs):
         super().configure(action_types, grid_size, block_size,
+                          n_features=4,
                           max_step=max_step, **kwargs)
         self.state = None
         self.first_pick = True
@@ -108,6 +109,31 @@ class PickputEnv(GridEnv):
     def _get_center(self):
         return self.player_pos
 
+    def _render_feature_map(self):
+        self.feature_map.fill(0)
+        feat_cnt = 0
+
+        loc = tuple(self.player_pos)
+        if self.state == State.picked:
+            self.feature_map[loc][feat_cnt] = 1
+        else:
+            self.feature_map[loc][feat_cnt] = 0.5
+        feat_cnt += 1
+
+        # draw obj
+        if self.obj_pos and self.state == State.start:
+            loc = tuple(self.obj_pos)
+            self.feature_map[loc][feat_cnt] = 1
+        feat_cnt += 1
+
+        # draw mark
+        if self.mark_pos:
+            loc = tuple(self.mark_pos)
+            self.feature_map[loc][feat_cnt] = 1
+        feat_cnt += 1
+
+        self.feature_map[:,:,feat_cnt] = 1
+
     def _render_grid(self):
         # clear canvas
         self.draw.rectangle((0, 0, *self.frame_size), fill='#333')
@@ -120,7 +146,10 @@ class PickputEnv(GridEnv):
         # draw mark
         if self.mark_pos:
             loc = self.get_frame_rect(self.mark_pos)
-            self.draw.rectangle(loc, outline='white')
+            if self.block_size == 1:
+                self.draw.rectangle(loc, fill='white')
+            else:
+                self.draw.rectangle(loc, outline='white')
 
         # draw player
         loc = self.get_frame_rect(self.player_pos)

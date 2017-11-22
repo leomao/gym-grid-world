@@ -22,11 +22,12 @@ class EatBulletPairEnv(GridEnv):
         super().__init__()
         self._is_configured = False
 
-    def configure(self, grid_size=(10, 10), block_size=(5, 5),
+    def configure(self, grid_size=(10, 10), block_size=5,
                   food_n: int = 3,
                   max_step: int = 500,
                   **kwargs):
         super().configure(self.ActionNames, grid_size, block_size,
+                          n_features=4,
                           max_step=max_step, **kwargs)
         self.player_pos = None # type: Point
         self.food_n = food_n
@@ -83,6 +84,23 @@ class EatBulletPairEnv(GridEnv):
 
     def _get_center(self):
         return self.player_pos
+
+    def _render_feature_map(self):
+        self.feature_map.fill(0)
+        feat_cnt = 0
+
+        loc = tuple(self.player_pos)
+        self.feature_map[loc][feat_cnt] = 1
+        feat_cnt += 1
+
+        # draw foods
+        for pos, typ in self.foods.items():
+            loc = tuple(pos)
+            feat_idx = feat_cnt + int(typ == 0)
+            self.feature_map[loc][feat_idx] = 1
+        feat_cnt += 2
+
+        self.feature_map[:,:,feat_cnt] = 1
 
     def _render_grid(self):
         # clear canvas
