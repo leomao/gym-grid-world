@@ -7,6 +7,7 @@ from gym import spaces
 
 from .base import BaseEnv
 
+
 @total_ordering
 class Point:
     def __init__(self, x=0, y=0) -> None:
@@ -51,6 +52,7 @@ class Point:
 
     def abs(self):
         return abs(self.x) + abs(self.y)
+
 
 class GridEnv(BaseEnv):
     '''
@@ -149,7 +151,7 @@ class GridEnv(BaseEnv):
             ro = self.obs_size[0] - r + rc
             bo = self.obs_size[1] - b + bc
             self.obs_map.fill(0)
-            self.obs_map[lo:ro,to:bo] = self.feature_map[lc:rc,tc:bc]
+            self.obs_map[lo:ro, to:bo] = self.feature_map[lc:rc, tc:bc]
         return self.obs_map
 
     def _render_env(self):
@@ -169,7 +171,11 @@ class GridEnv(BaseEnv):
 
     def get_info(self):
         obs = np.array(self.image.getdata()).reshape((*self.frame_size, 3))
-        mmap = np.array(self.whole_image.getdata()).reshape((*self.whole_size, 3))
+        if self.center:
+            mmap = np.array(self.whole_image.getdata())
+            mmap = mmap.reshape((*self.frame_size, 3))
+        else:
+            mmap = obs
         return {
             'obs': obs,
             'map': mmap,

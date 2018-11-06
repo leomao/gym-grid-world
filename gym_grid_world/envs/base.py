@@ -6,6 +6,7 @@ from gym.utils import seeding
 
 from PIL import Image, ImageDraw
 
+
 class BaseEnv(gym.Env):
     '''
     Abstract class for visual environments rendered by PIL
@@ -13,7 +14,7 @@ class BaseEnv(gym.Env):
     metadata = {'render.modes': ['human', 'rgb_array']}
 
     def __init__(self):
-        self._seed()
+        self.seed()
         self.__configured = False
 
     def configure(self, actions, frame_size, *, raw_array=False, max_step=-1):
@@ -57,16 +58,16 @@ class BaseEnv(gym.Env):
         raise NotImplementedError
 
     # gym.Env functions
-    def _seed(self, seed=None):
+    def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
-    def _reset(self):
+    def reset(self):
         self.step_cnt = 0
         self.init()
         return self.get_obs()
 
-    def _step(self, action):
+    def step(self, action):
         action = int(action)
         assert 0 <= action < self.action_space.n
 
@@ -79,7 +80,7 @@ class BaseEnv(gym.Env):
 
         return obs, rew, done, info
 
-    def _render(self, mode='human', close=False):
+    def render(self, mode='human', close=False):
         if mode == 'rgb_array':
             return self.get_bitmap()
 

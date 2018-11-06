@@ -3,14 +3,15 @@ from enum import IntEnum
 
 from .grid import GridEnv, Point
 
+
 State = IntEnum('State', [
     'start',
     'end' # this must exists
 ])
 
+
 action_types = [ 'stay', 'up', 'down', 'left', 'right', ]
 Action = IntEnum('Action', action_types, start=0)
-
 Movesets = {
     Action.up: Point(0, -1),
     Action.down: Point(0, 1),
@@ -18,17 +19,15 @@ Movesets = {
     Action.left: Point(-1, 0),
 }
 
+
 class PushBlockEnv(GridEnv):
 
     metadata = {'render.modes': ['human']}
     reward_range = (-1., 5.)
 
     def __init__(self):
-        super().__init__();
+        super().__init__()
         self._is_configured = False
-
-    def __del__(self):
-        super().__del__()
 
     def configure(self, grid_size=(10, 10), block_size=5,
                   max_step=200, obj_n=1, **kwargs):
@@ -124,7 +123,7 @@ class PushBlockEnv(GridEnv):
             self.feature_map[loc][feat_cnt] = 1
         feat_cnt += 1
 
-        self.feature_map[:,:,feat_cnt] = 1
+        self.feature_map[:, :, feat_cnt] = 1
 
     def _render_grid(self):
         # clear canvas
