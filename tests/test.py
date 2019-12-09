@@ -38,8 +38,8 @@ while True:
 
         act = act_map.get(k, 0)
 
-        if np.random.random() < 0.05:
-            act = env.action_space.sample()
+        # if np.random.random() < 0.05:
+            # act = env.action_space.sample()
 
         obs, rew, done, _ = env.step(act)
         total_rew += rew

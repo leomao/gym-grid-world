@@ -94,7 +94,8 @@ class GridEnv(BaseEnv):
             self.whole_size = self.frame_size
 
         if self.raw_array:
-            self.observation_space = spaces.Box(0., 1., self.obs_map.shape)
+            self.observation_space = spaces.Box(0., 1., self.obs_map.shape,
+                                                np.float32)
 
     # utils functions
     def rand_pos(self, size=None, skip=set(), replace=False):
